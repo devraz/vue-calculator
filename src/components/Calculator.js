@@ -21,9 +21,6 @@ class Calculator {
   }
 
   isAssociative(key, type) {
-    if (!this.isOperator(key)) {
-      throw new Error(`Invalid key: ${key}`);
-    }
     if (operators[key].associativity === type) {
       return true;
     }
@@ -31,9 +28,6 @@ class Calculator {
   }
 
   comparePrecedence(key1, key2) {
-    if (!this.isOperator(key1) || !this.isOperator(key2)) {
-      throw new Error(`Invalid keys: ${key1} ${key2}`);
-    }
     return operators[key1].precedence - operators[key2].precedence;
   }
 
@@ -134,7 +128,7 @@ class Calculator {
     this.printStack('computeOutput::start', 'output', this.output);
 
     const computeStack = [];
-    
+
     for (let key of this.output) {
       if (!this.isOperator(key)) {
         computeStack.push(key);
