@@ -47,7 +47,7 @@ export default {
   components: {
     CalculatorKey
   },
-  name: "app",
+  name: "Calculator",
   created() {
     this.calculator = new Calculator({ debugMode: this.debug });
     document.addEventListener('keyup', this.enterKeyListener);
