@@ -1,12 +1,18 @@
 import Stack from './Stack.js'
-import { associativity, precedence, operators } from './Enums.js'
+import {
+  associativity,
+  precedence,
+  operators
+} from './Enums.js'
 
 class Calculator {
-  constructor({ debugMode = false }) {
+  constructor({
+    debugMode = false
+  }) {
     this.output = [];
     this.stack = new Stack();
     this.debugMode = debugMode;
-    this.dotMode = false;
+    this.digitsInsertionMode = false;
     this.tempNumber = 0;
   }
 
@@ -31,17 +37,16 @@ class Calculator {
     return operators[key1].precedence - operators[key2].precedence;
   }
 
-  handleInput(key) {
-    this.printStack('handleInput::start', 'stack', this.stack);
-    this.printStack('handleInput::start', 'output', this.output);
-    if(this.dotMode && !isNaN(key)) {
-        this.tempNumber = parseFloat(`${this.tempNumber}${key}`);
-        return this.tempNumber;
-    } else if(this.dotMode) {
-        this.dotMode = false;
-        this.output.push(this.tempNumber);
-    } 
-    
+  isNumber(num) {
+    return !isNaN(num);
+  }
+
+  /**
+   * Uses the shunting-yard algorithm for parsing mathematical 
+   * expressions written in infix notation to Reverse Polish Notation 
+   * @param {*} key 
+   */
+  processInput(key) {
     if (this.isOperator(key)) {
       while (!this.stack.isEmpty() && this.isOperator(this.stack.peek())) {
         if ((this.isAssociative(key, associativity.LEFT) &&
@@ -61,24 +66,45 @@ class Calculator {
         this.output.push(this.stack.pop());
       }
       this.stack.pop();
-    } else if (key === '.') { 
-        this.dotMode = true;
-        this.tempNumber = `${this.output.pop()}.`;
+    } else if (key === '.') {
+      this.digitsInsertionMode = true;
+      this.tempNumber = `${this.output.pop()}.`;
     } else {
-      this.output.push(key);
-      return key;
+      this.digitsInsertionMode = true;
+      this.tempNumber = key;
     }
+  }
+
+  handleInput(key) {
+    this.printStack('handleInput::start', 'stack', this.stack);
+    this.printStack('handleInput::start', 'output', this.output);
+
+    // Insertion mode on (just received another digit for this number)
+    if (this.digitsInsertionMode && this.isNumber(key)) {
+      this.tempNumber = parseFloat(`${this.tempNumber}${key}`);
+      return;
+    }
+
+    // Insertion mode off (not expecting any more digits for this number)
+    if (this.digitsInsertionMode) {
+      this.digitsInsertionMode = false;
+      this.output.push(this.tempNumber);
+    }
+
+    this.processInput(key);
+
     this.printStack('handleInput::end', 'stack', this.stack);
     this.printStack('handleInput::end', 'output', this.output);
-    return null;
   }
 
   pushStackToOutput() {
     this.printStack('pushStackToOutput::start', 'stack', this.stack);
     this.printStack('pushStackToOutput::start', 'output', this.output);
+
     while (!this.stack.isEmpty()) {
       this.output.push(this.stack.pop());
     }
+
     this.printStack('pushStackToOutput::end', 'stack', this.stack);
     this.printStack('pushStackToOutput::end', 'output', this.output);
   }
@@ -103,10 +129,12 @@ class Calculator {
   }
 
   computeOutput() {
-    const computeStack = [];
-    this.printStack('computeOutput::start', 'computeStack', computeStack);
+    this.printStack('computeOutput::start', 'computeStack', []);
     this.printStack('computeOutput::start', 'stack', this.stack);
     this.printStack('computeOutput::start', 'output', this.output);
+
+    const computeStack = [];
+    
     for (let key of this.output) {
       if (!this.isOperator(key)) {
         computeStack.push(key);
@@ -121,10 +149,16 @@ class Calculator {
     this.printStack('computeOutput::end', 'computeStack', computeStack);
     this.printStack('computeOutput::end', 'stack', this.stack);
     this.printStack('computeOutput::end', 'output', this.output);
+
     return parseFloat(computeStack.pop());
   }
 
   getResult() {
+    if (this.digitsInsertionMode) {
+      this.digitsInsertionMode = false;
+      this.output.push(this.tempNumber);
+      this.tempNumber = 0;
+    }
     this.pushStackToOutput();
     return this.computeOutput();
   }

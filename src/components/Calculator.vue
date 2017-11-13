@@ -63,29 +63,28 @@ export default {
   },
   data() {
     return {
-      result: 0
+      result: ''
     };
   },
   methods: {
-    handleClick(button) {
-      if (button === "=") {
+    handleClick(key) {
+      if (key === "=") {
         this.calculate();
         return;
-      } else if (button === "AC") {
+      } else if (key === "AC") {
         this.reset();
         return;
       }
-      const tempResult = this.calculator.handleInput(button);
-      if (tempResult !== null) {
-        this.result = tempResult;
-      }
+      this.calculator.handleInput(key);
+      this.result = `${this.result} ${key}`;
+
     },
     calculate() {
       this.result = this.calculator.getResult();
     },
     reset() {
       this.calculator.reset();
-      this.result = 0;
+      this.result = '';
     },
     enterKeyListener(evt) {
       // TODO: Could not get v-on:keyup.enter to work, probably since body is outside of Vue
