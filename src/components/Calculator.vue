@@ -38,16 +38,15 @@
 </template>
 
 <script>
-import CalculatorKey from "./CalculatorKey.vue";
-import Calculator from "./Calculator.js";
-
-const ENTER_KEY_CODE = 13;
+import CalculatorKey from './CalculatorKey.vue';
+import Calculator from './Calculator.js';
+import { digitKeyCodes, operatorKeyCodes } from './KeyCodes.js';
 
 export default {
   components: {
     CalculatorKey
   },
-  name: "Calculator",
+  name: 'Calculator',
   created() {
     this.calculator = new Calculator({ debugMode: this.debug });
     document.addEventListener('keyup', this.enterKeyListener);
@@ -68,16 +67,15 @@ export default {
   },
   methods: {
     handleClick(key) {
-      if (key === "=") {
+      if (key === '=') {
         this.calculate();
         return;
-      } else if (key === "AC") {
+      } else if (key === 'AC') {
         this.reset();
         return;
       }
       this.calculator.handleInput(key);
       this.result = `${this.result} ${key}`;
-
     },
     calculate() {
       this.result = this.calculator.getResult();
@@ -87,9 +85,19 @@ export default {
       this.result = '';
     },
     enterKeyListener(evt) {
-      // TODO: Could not get v-on:keyup.enter to work, probably since body is outside of Vue
-      if (evt.keyCode === ENTER_KEY_CODE) {
-        this.calculate();
+      let key;
+      if (evt.keyCode in operatorKeyCodes) {
+        for (let kc of operatorKeyCodes[evt.keyCode]) {
+          if (evt.shiftKey === kc.shiftKeyPressed) {
+            key = kc.key;
+          }
+        }
+      }
+      if (!key && evt.keyCode in digitKeyCodes) {
+        key = digitKeyCodes[evt.keyCode];
+      }
+      if (key) {
+        this.handleClick(key);
       }
     }
   }
