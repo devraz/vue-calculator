@@ -16,6 +16,10 @@ const operatorKeyCodes = {
     key: '=',
     shiftKeyPressed: false
   }],
+  27: [{
+    key: 'AC',
+    shiftKeyPressed: false
+  }],
   48: [{
     key: ')',
     shiftKeyPressed: true
