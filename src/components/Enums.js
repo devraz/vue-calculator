@@ -27,4 +27,8 @@ const operators = {
   },
 };
 
-export { associativity, precedence, operators }
+export {
+  associativity,
+  precedence,
+  operators
+}

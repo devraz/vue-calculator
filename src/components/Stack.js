@@ -1,35 +1,35 @@
 class Stack {
-    constructor() {
-        this.stack = [];
-    }
+  constructor() {
+    this.stack = [];
+  }
 
-    isEmpty() {
-        return this.size() === 0;
-    }
+  isEmpty() {
+    return this.size() === 0;
+  }
 
-    peek() {
-        return this.stack[this.stack.length - 1];
-    }
+  peek() {
+    return this.stack[this.stack.length - 1];
+  }
 
-    push(item) {
-        this.stack.push(item);
-    }
+  push(item) {
+    this.stack.push(item);
+  }
 
-    pop() {
-        return this.stack.pop();
-    }
+  pop() {
+    return this.stack.pop();
+  }
 
-    clear() {
-        this.stack = [];
-    }
+  clear() {
+    this.stack = [];
+  }
 
-    size() {
-        return this.stack.length;
-    }
+  size() {
+    return this.stack.length;
+  }
 
-    toString() {
-        return `${this.stack}`;
-    }
+  toString() {
+    return `${this.stack}`;
+  }
 }
 
 export default Stack

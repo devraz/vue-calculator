@@ -38,21 +38,21 @@
 </template>
 
 <script>
-import CalculatorKey from './CalculatorKey.vue';
-import Calculator from './Calculator.js';
-import { digitKeyCodes, operatorKeyCodes } from './KeyCodes.js';
+import CalculatorKey from "./CalculatorKey.vue";
+import Calculator from "./Calculator.js";
+import { digitKeyCodes, operatorKeyCodes } from "./KeyCodes.js";
 
 export default {
   components: {
     CalculatorKey
   },
-  name: 'Calculator',
+  name: "Calculator",
   created() {
     this.calculator = new Calculator({ debugMode: this.debug });
-    document.addEventListener('keyup', this.keyListener);
+    document.addEventListener("keyup", this.keyListener);
   },
   destroyed() {
-    document.removeEventListener('keyup', this.keyListener);
+    document.removeEventListener("keyup", this.keyListener);
   },
   props: {
     debug: {
@@ -62,7 +62,7 @@ export default {
   },
   data() {
     return {
-      display: ''
+      display: ""
     };
   },
   methods: {

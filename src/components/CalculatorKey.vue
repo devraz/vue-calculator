@@ -10,6 +10,6 @@ export default {
       required: true
     }
   }
-}
+};
 </script>
 <style src="../assets/stylesheets/keys.css"></style>

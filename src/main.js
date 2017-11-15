@@ -5,5 +5,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 new Vue({
   el: '#app',
   template: '<App/>',
-  components: { App }
+  components: {
+    App
+  }
 })

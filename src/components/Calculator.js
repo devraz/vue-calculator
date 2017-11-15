@@ -75,19 +75,19 @@ class Calculator {
     this.printStack('handleInput::start', 'output', this.output);
 
     // calculate
-    if(key === '=') {
-        this.display = this.getResult();
-        return;
+    if (key === '=') {
+      this.display = this.getResult();
+      return;
     }
 
     // reset
-    if(key === 'AC') {
-        this.reset();
-        return;
+    if (key === 'AC') {
+      this.reset();
+      return;
     }
 
     // update display
-    this.display = `${this.display}${key}`
+    this.display = `${this.display}${key}`;
 
     // Insertion mode on (just received another digit for this number)
     if (this.digitsInsertionMode && this.isNumber(key)) {
@@ -173,7 +173,7 @@ class Calculator {
     }
     this.pushStackToOutput();
     const result = this.computeOutput();
-    
+
     this.output = [];
     this.output.push(result);
 
