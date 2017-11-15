@@ -2,7 +2,7 @@
     <div class="container calculator"> 
       <div class="row">
         <div class="col-12 result">
-          <input type="text" readonly class="form-control-plaintext" id="result" v-model="result">
+          <input type="text" readonly class="form-control-plaintext" id="result" v-model="display">
         </div>
       </div>
       <div class="row">
@@ -49,10 +49,10 @@ export default {
   name: 'Calculator',
   created() {
     this.calculator = new Calculator({ debugMode: this.debug });
-    document.addEventListener('keyup', this.enterKeyListener);
+    document.addEventListener('keyup', this.keyListener);
   },
   destroyed() {
-    document.removeEventListener('keyup', this.enterKeyListener);
+    document.removeEventListener('keyup', this.keyListener);
   },
   props: {
     debug: {
@@ -62,29 +62,15 @@ export default {
   },
   data() {
     return {
-      result: ''
+      display: ''
     };
   },
   methods: {
     handleClick(key) {
-      if (key === '=') {
-        this.calculate();
-        return;
-      } else if (key === 'AC') {
-        this.reset();
-        return;
-      }
       this.calculator.handleInput(key);
-      this.result = `${this.result} ${key}`;
+      this.display = this.calculator.display;
     },
-    calculate() {
-      this.result = this.calculator.getResult();
-    },
-    reset() {
-      this.calculator.reset();
-      this.result = '';
-    },
-    enterKeyListener(evt) {
+    keyListener(evt) {
       let key;
       if (evt.keyCode in operatorKeyCodes) {
         for (let kc of operatorKeyCodes[evt.keyCode]) {

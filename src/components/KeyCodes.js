@@ -28,6 +28,14 @@ const operatorKeyCodes = {
     key: '(',
     shiftKeyPressed: true
   }],
+  109: [{
+    key: '-',
+    shiftKeyPressed: true
+  }],
+  111: [{
+    key: '/',
+    shiftKeyPressed: false
+  }],
   187: [{
     key: '+',
     shiftKeyPressed: true
@@ -35,12 +43,11 @@ const operatorKeyCodes = {
     key: '=',
     shiftKeyPressed: false
   }],
-  109: [{
+  189: [{
     key: '-',
     shiftKeyPressed: true
-  }],
-  111: [{
-    key: '/',
+  }, {
+    key: '-',
     shiftKeyPressed: false
   }],
   190: [{

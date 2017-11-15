@@ -14,6 +14,7 @@ class Calculator {
     this.debugMode = debugMode;
     this.digitsInsertionMode = false;
     this.tempNumber = 0;
+    this.display = '';
   }
 
   isOperator(key) {
@@ -73,6 +74,21 @@ class Calculator {
     this.printStack('handleInput::start', 'stack', this.stack);
     this.printStack('handleInput::start', 'output', this.output);
 
+    // calculate
+    if(key === '=') {
+        this.display = this.getResult();
+        return;
+    }
+
+    // reset
+    if(key === 'AC') {
+        this.reset();
+        return;
+    }
+
+    // update display
+    this.display = `${this.display}${key}`
+
     // Insertion mode on (just received another digit for this number)
     if (this.digitsInsertionMode && this.isNumber(key)) {
       this.tempNumber = parseFloat(`${this.tempNumber}${key}`);
@@ -85,6 +101,7 @@ class Calculator {
       this.output.push(this.tempNumber);
     }
 
+    // process
     this.processInput(key);
 
     this.printStack('handleInput::end', 'stack', this.stack);
@@ -140,6 +157,7 @@ class Calculator {
         computeStack.push(result);
       }
     }
+
     this.printStack('computeOutput::end', 'computeStack', computeStack);
     this.printStack('computeOutput::end', 'stack', this.stack);
     this.printStack('computeOutput::end', 'output', this.output);
@@ -154,12 +172,18 @@ class Calculator {
       this.tempNumber = 0;
     }
     this.pushStackToOutput();
-    return this.computeOutput();
+    const result = this.computeOutput();
+    
+    this.output = [];
+    this.output.push(result);
+
+    return result;
   }
 
   reset() {
     this.stack.clear();
     this.output = [];
+    this.display = '';
   }
 
   printStack(funcName, stackName, stack) {
