@@ -61,8 +61,6 @@ class Calculator {
         this.output.push(this.stack.pop());
       }
       this.stack.pop();
-    } else if (this.isNumber(key)) {
-      //this.tempNumber = key;
     }
   }
 
