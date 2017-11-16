@@ -12,8 +12,8 @@ class Calculator {
     this.output = [];
     this.stack = new Stack();
     this.debugMode = debugMode;
-    this.digitsInsertionMode = false;
-    this.tempNumber = 0;
+    this.tempNumber = '';
+    this.previousKey = '';
     this.display = '';
   }
 
@@ -33,7 +33,7 @@ class Calculator {
   }
 
   isNumber(num) {
-    return !isNaN(num);
+    return !isNaN(parseFloat(num));
   }
 
   /**
@@ -61,18 +61,97 @@ class Calculator {
         this.output.push(this.stack.pop());
       }
       this.stack.pop();
-    } else if (key === '.') {
-      this.digitsInsertionMode = true;
-      this.tempNumber = `${this.output.pop()}.`;
-    } else {
-      this.digitsInsertionMode = true;
-      this.tempNumber = key;
+    } else if (this.isNumber(key)) {
+      //this.tempNumber = key;
     }
+  }
+
+  isNumberAfterClosingBracket(key) {
+    return (this.previousKey === ')' && this.isNumber(key));
+  }
+
+  isOpeningBracketAfterNumber(key) {
+    return (key === '(' && this.isNumber(this.previousKey));
+  }
+
+  tempNumberAlreadyHasDot(key) {
+    return (key === '.' && this.tempNumber.includes('.'));
+  }
+
+  equationStartsWithOperator(key) {
+    return (this.isOperator(key) && this.previousKey === '');
+  }
+
+  equationStartsWithClosingBracket(key) {
+    return (key === ')' && this.previousKey === '');
+  }
+
+  hasBadInput(key) {
+    return (this.isNumberAfterClosingBracket(key) ||
+      this.isOpeningBracketAfterNumber(key) ||
+      this.tempNumberAlreadyHasDot(key) ||
+      this.equationStartsWithOperator(key) ||
+      this.equationStartsWithClosingBracket(key));
   }
 
   handleInput(key) {
     this.printStack('handleInput::start', 'stack', this.stack);
     this.printStack('handleInput::start', 'output', this.output);
+
+    // handle bad input
+    if (this.hasBadInput(key)) {
+      return;
+    }
+
+    // replace operator if received more than one in a row
+    if (this.isOperator(key) && this.isOperator(this.previousKey)) {
+      this.stack.pop();
+      this.display = this.display.slice(0, -1);
+    }
+
+    let tempDisplay = `${this.display}${key}`;
+
+    // discard previous result if starting new equation with a digit, dot or bracket
+    if ((this.isNumber(key) || !this.isOperator(key)) &&
+      this.previousKey === '=') {
+      this.output.pop();
+      this.display = '';
+    }
+
+    // handle dot without preceding 0
+    if (key === '.' && !this.isNumber(this.previousKey)) {
+      this.tempNumber = '0.';
+      this.display = `${this.display}${this.tempNumber}`;
+      this.previousKey = key;
+      return;
+    }
+
+    // check if we are adding a digit or a dot to a number
+    if ((this.isNumber(key) || key === '.') &&
+      (this.isNumber(this.previousKey) || this.previousKey === '.')) {
+      this.tempNumber = `${this.tempNumber}${key}`;
+      this.display = `${this.display}${key}`;
+      this.previousKey = key;
+      return;
+    }
+
+    // push number if not expecting anymore digits
+    if (!this.isNumber(key) && this.isNumber(this.previousKey)) {
+      this.output.push(this.tempNumber);
+      this.tempNumber = '';
+      tempDisplay = `${this.display}${key}`;
+    } else if (this.isNumber(key)) {
+      this.tempNumber = key;
+      this.display = `${this.display}${key}`;
+      this.previousKey = key;
+      return;
+    }
+
+    // update display
+    this.display = tempDisplay;
+
+    // keep track of last key
+    this.previousKey = key;
 
     // calculate
     if (key === '=') {
@@ -84,21 +163,6 @@ class Calculator {
     if (key === 'AC') {
       this.reset();
       return;
-    }
-
-    // update display
-    this.display = `${this.display}${key}`;
-
-    // Insertion mode on (just received another digit for this number)
-    if (this.digitsInsertionMode && this.isNumber(key)) {
-      this.tempNumber = parseFloat(`${this.tempNumber}${key}`);
-      return;
-    }
-
-    // Insertion mode off (not expecting any more digits for this number)
-    if (this.digitsInsertionMode) {
-      this.digitsInsertionMode = false;
-      this.output.push(this.tempNumber);
     }
 
     // process
@@ -166,16 +230,12 @@ class Calculator {
   }
 
   getResult() {
-    if (this.digitsInsertionMode) {
-      this.digitsInsertionMode = false;
-      this.output.push(this.tempNumber);
-      this.tempNumber = 0;
-    }
     this.pushStackToOutput();
     const result = this.computeOutput();
 
-    this.output = [];
-    this.output.push(result);
+    this.reset();
+    this.previousKey = '=';
+    this.output.push(`${result}`);
 
     return result;
   }
@@ -184,6 +244,8 @@ class Calculator {
     this.stack.clear();
     this.output = [];
     this.display = '';
+    this.previousKey = '';
+    this.tempNumber = '';
   }
 
   printStack(funcName, stackName, stack) {
